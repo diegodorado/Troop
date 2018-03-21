@@ -26,3 +26,15 @@ let shh = (#gain 0)
 let smoothrand ar sl = rand * ar + ( (slow sl $ sine1) + (slow (sl*(1/3)) $ tri1) )
 let lfotri s vmin vmax = slow s $ scale vmin vmax tri1
 let lfosin s vmin vmax = slow s $ scale vmin vmax sine1
+
+e8 :: Pattern Int -> Pattern a -> Pattern a
+let e8 = temporalParam e8'
+
+e8' :: Int -> Pattern a -> Pattern a
+let e8' n p = (flip const) <$> (filterValues (== True) $ listToPat $ bjorklund (n,8)) <*> p
+
+e16 :: Pattern Int -> Pattern a -> Pattern a
+let e16 = temporalParam e16'
+
+e16' :: Int -> Pattern a -> Pattern a
+let e16' n p = (flip const) <$> (filterValues (== True) $ listToPat $ bjorklund (n,16)) <*> p
