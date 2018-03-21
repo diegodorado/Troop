@@ -16,9 +16,9 @@ import sys
 class Client:
 
     version = '0.4'
-    
-    def __init__(self, hostname="188.166.144.124", port=57890, name=None, lang=FOXDOT, logging=False, ipv6=False):
-        
+
+    def __init__(self, hostname="127.0.0.1", port=57890, name=None, lang=FOXDOT, logging=False, ipv6=False, promptPwd=True):
+
         self.hostname = str(hostname)
         self.port     = int(port)
         self.name     = str(name if name is not None else hostname)
@@ -27,11 +27,15 @@ class Client:
         # Try and connect to server
 
         try:
-            
-            self.send = Sender().connect(self.hostname, self.port, ipv6, getpass())
+
+            password=''
+            if promptPwd:
+                password = getpass()
+
+                self.send = Sender().connect(self.hostname, self.port, ipv6, password)
 
             if not self.send.connected:
-                
+
                 raise ConnectionError("Login attempt failed")
 
             else:
@@ -39,7 +43,7 @@ class Client:
                 self.id = self.send.conn_id
 
                 print("Password accepted")
-            
+
         except ConnectionError as e:
 
             sys.exit(e)
@@ -49,7 +53,7 @@ class Client:
             print("No ID number assigned by server")
 
         # Set up a receiver on the connected socket
-          
+
         self.recv = Receiver(self.send.conn)
         self.recv.start()
 
@@ -93,7 +97,7 @@ class Client:
         # Give the receiving server a reference to the user-interface
         self.recv.ui = self.ui
         self.send.ui = self.ui
-        
+
         self.ui.run()
 
     @staticmethod
@@ -107,4 +111,3 @@ class Client:
                 except:
                     pass
         return conf['host'], int(conf['port'])
-            
