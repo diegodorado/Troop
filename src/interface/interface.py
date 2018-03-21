@@ -98,7 +98,7 @@ class DummyInterface(BasicInterface):
     def __init__(self):
         BasicInterface.__init__(self)
         self.lang = DummyInterpreter()
-        self.text=ThreadSafeText(self, bg=COLOURS["Background"], fg="white", insertbackground=COLOURS["Background"], height=15, bd=0)
+        self.text=ThreadSafeText(self, bg=COLOURS["Background"], fg="white", insertbackground=COLOURS["Background"], height=25, bd=0)
         self.text.grid(row=0, column=0, sticky="nsew")
         self.text.marker = Peer(-1, self.text)
         self.lang.start()
@@ -260,13 +260,15 @@ class Interface(BasicInterface):
 
         disable = lambda e: "break"
 
-        for key in list("qwertyuipdfghjklbm") + ["slash"]:
-
+        # re-enable ctrl+m binding
+        #for key in list("qwertyuipdfghjklbm") + ["slash"]:
+        for key in list("qwertyuipdfghjklb") + ["slash"]:
             self.text.bind("<{}-{}>".format(CtrlKey, key), disable)
 
         # Allowed key-bindings
 
         self.text.bind("<{}-equal>".format(CtrlKey),  self.IncreaseFontSize)
+        self.text.bind("<{}-plus>".format(CtrlKey),  self.IncreaseFontSize)
         self.text.bind("<{}-minus>".format(CtrlKey),  self.DecreaseFontSize)
 
         self.text.bind("<{}-s>".format(CtrlKey),  self.menu.save_file)

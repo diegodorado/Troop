@@ -23,7 +23,7 @@ def find_colour(string):
 class Console(Text):
     def __init__(self, root, **kwargs):
         # Inherit
-        Text.__init__(self, root, **kwargs)   
+        Text.__init__(self, root, **kwargs)
 
         # Set font
 
@@ -39,7 +39,7 @@ class Console(Text):
 
             fontfamily = "Courier New"
 
-        self.font = tkFont.Font(family=fontfamily, size=12, name="ConsoleFont")
+        self.font = tkFont.Font(family=fontfamily, size=10, name="ConsoleFont")
         self.font.configure(**tkFont.nametofont("ConsoleFont").configure())
 
         self.configure(font="ConsoleFont")
@@ -60,9 +60,9 @@ class Console(Text):
     def update_me(self):
         try:
             while True:
-                
+
                 string = self.queue.get_nowait().rstrip() # Remove trailing whitespace
-                
+
                 match = find_colour(string)
 
                 if match:
@@ -96,10 +96,10 @@ class Console(Text):
         except queue.Empty:
 
             pass
-        
+
         self.after(100, self.update_me)
 
-    def write(self, string):        
+    def write(self, string):
         """ Adds a string to the console queue """
         if string != "\n":
             self.queue.put(string)
@@ -108,4 +108,3 @@ class Console(Text):
     def flush(self, *args, **kwargs):
         """ Override """
         return
-        
