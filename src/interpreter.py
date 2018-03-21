@@ -50,14 +50,14 @@ class DummyInterpreter:
         lastline   = int(end.split('.')[0]) + 1
 
         # Indicies of block to execute
-        block = [0,0]        
-        
+        block = [0,0]
+
         # 1. Get position of cursor
         cur_x, cur_y = index.split(".")
         cur_x, cur_y = int(cur_x), int(cur_y)
-        
+
         # 2. Go through line by line (back) and see what it's value is
-        
+
         for line in range(cur_x, 0, -1):
             if not text.get("%d.0" % line, "%d.end" % line).strip():
                 break
@@ -72,20 +72,20 @@ class DummyInterpreter:
         block[1] = line
 
         return block
-    
+
     def evaluate(self, string, *args, **kwargs):
         self.print_stdin(string, *args, **kwargs)
         return
 
     def start(self):
         return self
-    
+
     def stdout(self, *args, **kwargs):
         pass
-    
+
     def kill(self, *args, **kwargs):
         pass
-    
+
     def print_stdin(self, string, name=None, colour="White"):
         """ Handles the printing of the execute code to screen with coloured
             names and formatting """
@@ -99,14 +99,14 @@ class DummyInterpreter:
             for i in range(1,len(string)):
                 sys.stdout.write(colour_format("." * n, colour) + _ + string[i])
         return
-    
+
     def stop_sound(self):
         return ""
-    
+
     @staticmethod
     def format(string):
         return string
-    
+
 class Interpreter(DummyInterpreter):
     lang     = None
     clock    = None
@@ -175,7 +175,7 @@ class Interpreter(DummyInterpreter):
     def kill(self):
         """ Stops communicating with the subprocess """
         self.lang.communicate()
-        self.lang.kill() 
+        self.lang.kill()
 
 class CustomInterpreter:
     def __init__(self, *args, **kwargs):
@@ -218,36 +218,36 @@ class FoxDotInterpreter(Interpreter):
                 self.keywords = ['>>']
 
         except (ImportError, FileNotFoundError):
-            
+
             Interpreter.__init__(self, self.path)
 
             self.imported = False
 
-            self.keywords = ['classmethod', 'Clock', 'rFloorDiv', 'any', 'type', 'dict', 'max_length', 
-                             'sorted', 'staticmethod', 'or', 'loop_pattern_method', 'format', 'super', 
-                             'globals', 'rXor', 'inf', 'PTree', 'isinstance', 'callable', 'Scale', 'PRange', 
-                             'Div', 'PRand', 'pattern_depth', 'unicode', 'chr', '__import__', 'next', 'Or', 
-                             'EuclidsAlgorithm', 'FloorDiv', 'memoryview', 'setattr', 'sum', 'import', 
-                             'sliceToRange', 'PatternFormat', 'modi', 'Pow', 'PulsesToDurations', 'True', 
-                             'issubclass', 'PWalk', 'cmp', 'PDelay', 'list', 'dir', 'len', 'enumerate', 
-                             'Format', 'PTri', 'reduce', 'reload', 'PEuclid', 'PIndex', 'PFibMod', 'divmod', 
-                             'PSquare', 'unichr', 'round', 'map', 'long', 'Group', 'linvar', 'mapvar', 
-                             'PPairs', 'with', 'Mod', 'None', 'locals', 'basestring', 'P10', 'PRhythm', 
-                             'tuple', 'from', 'not', 'class', 'try', 'hasattr', 'compile', 'PSum', 'Pvar', 
-                             'filter', 'loop_pattern_func', 'PJoin', 'bool', 'Root', 'eval', 'for', 'Server', 
-                             'Add', 'PSq', 'str', 'PStutter', 'get_inverse_op', 'var', 'repr', 'PChain', 
-                             'reversed', 'hex', 'Nil', 'rSub', 'equal_values', 'if', 'all', 'rAdd', 'return', 
+            self.keywords = ['classmethod', 'Clock', 'rFloorDiv', 'any', 'type', 'dict', 'max_length',
+                             'sorted', 'staticmethod', 'or', 'loop_pattern_method', 'format', 'super',
+                             'globals', 'rXor', 'inf', 'PTree', 'isinstance', 'callable', 'Scale', 'PRange',
+                             'Div', 'PRand', 'pattern_depth', 'unicode', 'chr', '__import__', 'next', 'Or',
+                             'EuclidsAlgorithm', 'FloorDiv', 'memoryview', 'setattr', 'sum', 'import',
+                             'sliceToRange', 'PatternFormat', 'modi', 'Pow', 'PulsesToDurations', 'True',
+                             'issubclass', 'PWalk', 'cmp', 'PDelay', 'list', 'dir', 'len', 'enumerate',
+                             'Format', 'PTri', 'reduce', 'reload', 'PEuclid', 'PIndex', 'PFibMod', 'divmod',
+                             'PSquare', 'unichr', 'round', 'map', 'long', 'Group', 'linvar', 'mapvar',
+                             'PPairs', 'with', 'Mod', 'None', 'locals', 'basestring', 'P10', 'PRhythm',
+                             'tuple', 'from', 'not', 'class', 'try', 'hasattr', 'compile', 'PSum', 'Pvar',
+                             'filter', 'loop_pattern_func', 'PJoin', 'bool', 'Root', 'eval', 'for', 'Server',
+                             'Add', 'PSq', 'str', 'PStutter', 'get_inverse_op', 'var', 'repr', 'PChain',
+                             'reversed', 'hex', 'Nil', 'rSub', 'equal_values', 'if', 'all', 'rAdd', 'return',
                              'PZip', 'global', 'else', 'Samples', 'print', 'PWhite', 'file', 'ord', 'rOr', 'range',
                              'complex', 'PwRand', 'PEuclid2', 'group_modi', 'Get', 'PStretch', 'asStream', 'lambda',
-                              'PSine', 'PDur', 'self', 'False', 'rGet', 'except', 'PQuicken', 'zip', 'hash', 'PAlt', 
-                              'PatternContainer', 'help', 'pow', 'PEq', 'in', 'PStep', 'iter', 'is', 'GeneratorPattern', 
-                              'ClassPatternMethod', 'min', 'DominantPattern', 'Mul', 'when', 'metaPattern', 'rMod', 
+                              'PSine', 'PDur', 'self', 'False', 'rGet', 'except', 'PQuicken', 'zip', 'hash', 'PAlt',
+                              'PatternContainer', 'help', 'pow', 'PEq', 'in', 'PStep', 'iter', 'is', 'GeneratorPattern',
+                              'ClassPatternMethod', 'min', 'DominantPattern', 'Mul', 'when', 'metaPattern', 'rMod',
                               'input', 'object', 'def', 'POperand', 'elif', 'while', 'PNe', 'PShuf', 'xrange',
-                              'getattr', 'get_expanded_len', 'rPow', 'bytearray', 'asPattern', 'expvar', 'Pattern', 
-                              'EmptyItem', 'vars', 'PZip2', 'delattr', 'frozenset', 'property', 'execfile', 
-                              'deepcopy', 'stdout', 'Xor', 'int', 'Sub', 'PxRand', 'PatternMethod', 'as', 'float', 
-                              'set', '\\A\\s*@.+', 'max', 'dots', 'patternclass', 'LCM', 'open', 'raw_input', 
-                              'PBeat', 'PGroup', 'StaticPatternMethod', 'Convert', 'P', 'and', 'abs', 'bin', 
+                              'getattr', 'get_expanded_len', 'rPow', 'bytearray', 'asPattern', 'expvar', 'Pattern',
+                              'EmptyItem', 'vars', 'PZip2', 'delattr', 'frozenset', 'property', 'execfile',
+                              'deepcopy', 'stdout', 'Xor', 'int', 'Sub', 'PxRand', 'PatternMethod', 'as', 'float',
+                              'set', '\\A\\s*@.+', 'max', 'dots', 'patternclass', 'LCM', 'open', 'raw_input',
+                              'PBeat', 'PGroup', 'StaticPatternMethod', 'Convert', 'P', 'and', 'abs', 'bin',
                               'slice', 'id', 'rDiv', '>>']
 
         self.keyword_regex = compile_regex(self.keywords)
@@ -258,7 +258,7 @@ class FoxDotInterpreter(Interpreter):
         return "FoxDot"
 
     @classmethod
-    def find_comment(cls, string):        
+    def find_comment(cls, string):
         instring, instring_char = False, ""
         for i, char in enumerate(string):
             if char in ('"', "'"):
@@ -295,7 +295,7 @@ class FoxDotInterpreter(Interpreter):
         """ Sends code to FoxDot instance and prints any error text """
 
         if self.imported:
-        
+
             Interpreter.print_stdin(self, *args, **kwargs)
 
             response = self.lang.execute(args[0], verbose=False)
@@ -308,7 +308,7 @@ class FoxDotInterpreter(Interpreter):
         else:
 
             Interpreter.evaluate(self, *args, **kwargs)
-        
+
         return
 
     def stop_sound(self):
@@ -318,7 +318,7 @@ class FoxDotInterpreter(Interpreter):
 class SuperColliderInterpreter(Interpreter):
     filetype = ".scd"
     def __init__(self):
-        
+
         if PY_VERSION == 2:
             from . import OSC
         else:
@@ -339,7 +339,7 @@ class SuperColliderInterpreter(Interpreter):
         return "SuperCollider"
 
     @classmethod
-    def find_comment(cls, string):        
+    def find_comment(cls, string):
         instring, instring_char = False, ""
         for i, char in enumerate(string):
             if char in ('"', "'"):
@@ -368,8 +368,8 @@ class SuperColliderInterpreter(Interpreter):
         lastline   = int(end.split('.')[0]) + 1
 
         # Indicies of block to execute
-        block = [0,0]        
-        
+        block = [0,0]
+
         # 1. Get position of cursor
         cur_y, cur_x = index.split(".")
         cur_y, cur_x = int(cur_y), int(cur_x)
@@ -404,9 +404,9 @@ class SuperColliderInterpreter(Interpreter):
             # Only check line if it has text
             if len(line_text) > 0:
                 for char_num in range(cur_x - 1, -1, -1):
-                    
+
                     try:
-                        char = line_text[char_num] 
+                        char = line_text[char_num]
                     except IndexError as e:
                         print("left bracket, string is {}, index is {}".format(line_text, char_num))
                         raise(e)
@@ -430,9 +430,9 @@ class SuperColliderInterpreter(Interpreter):
             # Only check line if it has text
             if len(line_text) > 0:
                 for char_num in range(cur_x, len(line_text)):
-                    
+
                     try:
-                        char = line_text[char_num] 
+                        char = line_text[char_num]
                     except IndexError as e:
                         print("right bracket, string is {}, index is {}".format(line_text, char_num))
                         raise(e)
@@ -451,7 +451,7 @@ class SuperColliderInterpreter(Interpreter):
 
     def stop_sound(self):
         return "s.freeAll"
-        
+
     def evaluate(self, string, *args, **kwargs):
         # Print to the console the message
         Interpreter.print_stdin(self, string, *args, **kwargs)
@@ -464,15 +464,32 @@ class SuperColliderInterpreter(Interpreter):
 class TidalInterpreter(Interpreter):
     path = 'ghci'
     filetype = ".tidal"
+    boot=''
     def __init__(self):
         # Start haskell interpreter
         Interpreter.__init__(self, self.path)
         self.re = {"tag_bold": self.find_keyword, "tag_italic": self.find_comment}
 
+        if os.path.isfile('BootTidal.hs'):
+            self.boot = open('BootTidal.hs').read()
+
+
     def start(self):
+        # Not always necessary but some versions of windows need setting d1-9
+        d_vals = range(1,10)
 
         self.lang = Popen(self.path, shell=True, universal_newlines=True,
                           stdin=PIPE)
+
+
+        self.lang.stdin.write(self.boot)
+
+        self.keywords  = ["d{}".format(n) for n in d_vals]
+        self.keywords += ["\$", "#", "hush"] # add string regex?
+
+        self.keyword_regex = compile_regex(self.keywords)
+
+        return self
 
         # Import Tidal and set the cps
         self.lang.stdin.write("import Sound.Tidal.Context\n")
@@ -482,9 +499,7 @@ class TidalInterpreter(Interpreter):
         self.lang.stdin.write("(cps, getNow) <- bpsUtils\n")
         self.lang.stdin.flush()
 
-        # Not always necessary but some versions of windows need setting d1-9
-        d_vals = range(1,10)
-        
+
         for n in d_vals:
             self.lang.stdin.write("(d{}, t{}) <- superDirtSetters getNow\n".format(n, n))
             self.lang.stdin.flush()
@@ -500,14 +515,14 @@ class TidalInterpreter(Interpreter):
         self.keywords += ["\$", "#", "hush"] # add string regex?
 
         self.keyword_regex = compile_regex(self.keywords)
-        
+
         return self
 
     def __repr__(self):
         return "TidalCycles"
 
     @classmethod # why is this not a static method?
-    def find_comment(cls, string):        
+    def find_comment(cls, string):
         instring, instring_char = False, ""
         for i, char in enumerate(string):
             if char in ('"', "'"):
@@ -522,7 +537,7 @@ class TidalInterpreter(Interpreter):
                 if not instring and (i+1) < len(string) and string[i + 1] == "-":
                     return [(i, len(string))]
         return []
-    
+
     @staticmethod
     def format(string):
         """ Used to formant multiple lines in haskell """
