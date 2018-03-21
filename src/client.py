@@ -32,7 +32,7 @@ class Client:
             if promptPwd:
                 password = getpass()
 
-                self.send = Sender().connect(self.hostname, self.port, ipv6, password)
+            self.send = Sender().connect(self.hostname, self.port, ipv6, password)
 
             if not self.send.connected:
 

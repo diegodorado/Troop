@@ -47,11 +47,11 @@ class NetworkMessageReader:
 
         # length is the size of the string processed
         length = 0
-        
+
         while i < len(data):
 
             # Find out which message type it is
-            
+
             cls = MESSAGE_TYPE[int(data[i])]
 
             # This tells us how many following items are arguments of this message
@@ -112,7 +112,7 @@ class MESSAGE(object):
 
     def raw_string(self):
         return "<{}>".format(self.type) + "".join(["<{}>".format(repr(item)) for item in self])
-        
+
     def __repr__(self):
         return str(self)
 
@@ -167,7 +167,7 @@ class MESSAGE(object):
         return args
 
 # Define types of message
-        
+
 class MSG_CONNECT(MESSAGE):
     type = 1
     def __init__(self, src_id, name, hostname, port, row=1, col=0):
@@ -285,7 +285,7 @@ class MSG_BRACKET(MESSAGE):
 
         self['row1'] = int(row1)
         self['col1'] = int(col1)
-        
+
         self['row2'] = int(row2)
         self['col2'] = int(col2)
 
@@ -307,7 +307,7 @@ class MSG_COMPARE(MESSAGE):
     type = 19
     def __init__(self, src_id, data):
         MESSAGE.__init__(self, src_id)
-        self['data']=json.dumps(data) if type(data) != str else data     
+        self['data']=json.dumps(data) if type(data) != str else data
 
 class MSG_KILL(MESSAGE):
     type = 20
@@ -329,8 +329,8 @@ class MSG_UNDO(MESSAGE):
         MESSAGE.__init__(self, src_id)
         self['reply'] = int(reply)
 
- 
-# Create a dictionary of message type to message class 
+
+# Create a dictionary of message type to message class
 
 MESSAGE_TYPE = { msg.type : msg for msg in [ MSG_CONNECT,
                                              MSG_INSERT,

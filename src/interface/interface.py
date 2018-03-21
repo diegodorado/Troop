@@ -40,7 +40,7 @@ class BasicInterface:
     def __init__(self):
         self.root=Tk()
         self.root.configure(background=COLOURS["Background"])
-        
+
         self.is_logging = False
         self.logfile = None
         self.wait_msg = None
@@ -50,7 +50,7 @@ class BasicInterface:
         self.last_keypress  = ""
         self.last_row       = 0
         self.last_col       = 0
-        
+
     def run(self):
         """ Starts the Tkinter loop and exits cleanly if interrupted"""
         try:
@@ -58,7 +58,7 @@ class BasicInterface:
         except (KeyboardInterrupt, SystemExit):
             self.kill()
         return
-    
+
     def kill(self):
         """ Terminates cleanly """
         stdout("Quitting")
@@ -75,7 +75,7 @@ class BasicInterface:
         # Get contents of the line
 
         start, end = "{}.0".format(line), "{}.end".format(line)
-        
+
         string = self.text.get(start, end)
 
         # Go through the possible tags
@@ -83,14 +83,14 @@ class BasicInterface:
         for tag_name, tag_finding_func in self.lang.re.items():
 
             self.text.tag_remove(tag_name, start, end)
-            
+
             for match_start, match_end in tag_finding_func(string):
-                
+
                 tag_start = "{}.{}".format(line, match_start)
                 tag_end   = "{}.{}".format(line, match_end)
 
                 self.text.tag_add(tag_name, tag_start, tag_end)
-                
+
         return
 
 class DummyInterface(BasicInterface):
@@ -124,7 +124,7 @@ class Interface(BasicInterface):
         # Set title and configure the interface grid
 
         self.title = title
-        
+
         self.root.title(self.title)
 
         self.root.columnconfigure(0, weight=0) # Line numbers
@@ -133,7 +133,7 @@ class Interface(BasicInterface):
         self.root.rowconfigure(0, weight=1) # Textbox
         self.root.rowconfigure(1, weight=0) # Dragbar
         self.root.rowconfigure(2, weight=0) # Console
-        
+
         self.root.protocol("WM_DELETE_WINDOW", self.kill )
 
         icon = os.path.join(os.path.dirname(__file__), "img", "icon")
@@ -142,7 +142,7 @@ class Interface(BasicInterface):
 
             # Use .ico file by default
             self.root.iconbitmap(icon + ".ico")
-            
+
         except:
 
             try:
@@ -172,7 +172,7 @@ class Interface(BasicInterface):
         # Line numbers
         self.line_numbers = LineNumbers(self.text, width=55, bg=COLOURS["Background"], bd=0, highlightthickness=0)
         self.line_numbers.grid(row=0, column=0, sticky='nsew')
-        
+
         # Drag is a small line that changes the size of the console
         self.drag = Dragbar( self )
         self.drag.grid(row=1, column=0, stick="nsew", columnspan=4)
@@ -207,7 +207,7 @@ class Interface(BasicInterface):
         self.menu = MenuBar(self, visible = True)
 
         # Key bindings
-        
+
         CtrlKey = "Command" if SYSTEM == MAC_OS else "Control"
 
         self.text.bind("<Key>", self.KeyPress)
@@ -236,8 +236,8 @@ class Interface(BasicInterface):
         self.text.bind("<{}-v>".format(CtrlKey), self.Paste)
 
         # Undo -- not implemented
-        self.text.bind("<{}-z>".format(CtrlKey), self.Undo)    
-        self.text.bind("<{}-y>".format(CtrlKey), self.Redo)    
+        self.text.bind("<{}-z>".format(CtrlKey), self.Undo)
+        self.text.bind("<{}-y>".format(CtrlKey), self.Redo)
 
         # Handling mouse events
         self.leftMouse_isDown = False
@@ -245,9 +245,9 @@ class Interface(BasicInterface):
         self.text.bind("<Button-1>", self.leftMousePress)
         self.text.bind("<B1-Motion>", self.leftMouseDrag)
         self.text.bind("<ButtonRelease-1>", self.leftMouseRelease)
-        
+
         self.text.bind("<Button-2>", self.rightMousePress) # disabled
-        
+
         # select_background
         self.text.tag_configure(SEL, background=COLOURS["Background"])   # Temporary fix - set normal highlighting to background colour
         self.text.bind("<<Selection>>", self.Selection)
@@ -302,7 +302,7 @@ class Interface(BasicInterface):
         # Continually check for messages to be sent
         self.update_send()
         self.update_graphs()
-        
+
     def kill(self):
         """ Close socket connections and terminate the application """
         try:
@@ -311,7 +311,7 @@ class Interface(BasicInterface):
                 from time import sleep
                 self.push(MSG_SET_ALL(self.text.marker.id, self.text.handle_getall(), -1))
                 sleep(0.25)
-                
+
             self.pull.kill()
             self.push.kill()
             self.lang.kill()
@@ -340,7 +340,7 @@ class Interface(BasicInterface):
 
         # Tell any other peers about this location
         self.push_queue.put( MSG_SET_MARK(-1, 1, 0, 0) )
-        
+
         return
 
     def stopSound(self, event):
@@ -373,7 +373,7 @@ class Interface(BasicInterface):
             return
 
         # For each connected peer, find the range covered by the tag
-        
+
         for peer in self.text.peers.values():
 
             tag_name = peer.text_tag
@@ -441,11 +441,11 @@ class Interface(BasicInterface):
                 y1 = max_height + offset_y
                 x2 = x1 + graph_w
                 y2 = y1 - (int(height))
-                
+
                 self.graphs.coords(peer.graph, (x1, y1, x2, y2))
 
             # TODO -- Write number / name? Maybe when hovered?
-                    
+
         self.root.update_idletasks()
         self.root.after(100, self.update_graphs)
 
@@ -499,9 +499,9 @@ class Interface(BasicInterface):
             # Add the list of messages to the send queue
 
             self.push_queue.put(msg)
-        
+
         return
-    
+
     def KeyPress(self, event):
         """ 'Pushes' the key-press to the server.
         """
@@ -523,7 +523,7 @@ class Interface(BasicInterface):
         messages = []
 
         # Get index
-        
+
         try:
 
             row, col = self.text.index(self.text.marker.mark).split(".")
@@ -549,7 +549,7 @@ class Interface(BasicInterface):
         wait_for_reply = False
 
         if event.keysym == "Delete":
-            
+
             messages.append( MSG_DELETE(self.text.marker.id, row, col) )
 
             wait_for_reply = True
@@ -577,7 +577,7 @@ class Interface(BasicInterface):
                 row, col = self.Right(old_row, old_col)
 
             elif event.keysym == "Up":
-                
+
                 row, col = self.Up(old_row, old_col)
 
             elif event.keysym == "Down":
@@ -606,7 +606,7 @@ class Interface(BasicInterface):
         else:
 
             # Only insert a character if the current "creative constraint" is satisfied -- this is not tidy
-        
+
             if self.__constraint__(self.text, self.text.marker):
 
                 if event.keysym == "Return":
@@ -614,32 +614,37 @@ class Interface(BasicInterface):
                     char = "\n"
                     wait_for_reply = True
 
-                    
+
                 elif event.keysym == "Tab":
-                    
+
                     char = "    "
                     col += len(char)
-                    
+
                 else:
-                    
+
                     char = event.char
 
-                messages.append( MSG_INSERT(self.text.marker.id, char, row, col) )
+                try:
+                    char = str(char)
+                    messages.append( MSG_INSERT(self.text.marker.id, char, row, col) )
+                except UnicodeEncodeError as e:
+                    pass
+
 
         # Push messages
 
         self.push_queue_put(messages, wait_for_reply)
-            
+
         # Store the key info
 
         self.last_keypress  = event.keysym
         self.last_row       = row
         self.last_col       = col
-        
+
         # Make sure the user sees their cursor
 
         self.text.see(self.text.marker.mark)
-    
+
         return "break"
 
     """ Handling changes in selected areas """
@@ -666,7 +671,7 @@ class Interface(BasicInterface):
                      MSG_SET_MARK(self.text.marker.id, new_row, new_col) ]
 
         self.push_queue_put( messages, wait_for_reply)
-                
+
         return "break"
 
     def SelectLeft(self, event):
@@ -675,7 +680,7 @@ class Interface(BasicInterface):
         row1, col1 = self.text.index(self.text.marker.mark).split(".")
         row1, col1 = int(row1), int(col1)
         row2, col2 = self.Left(row1, col1)
-        
+
         self.UpdateSelect(row1, col1, row2, col2)
         return "break"
 
@@ -685,27 +690,27 @@ class Interface(BasicInterface):
         row1, col1 = self.text.index(self.text.marker.mark).split(".")
         row1, col1 = int(row1), int(col1)
         row2, col2 = self.Right(row1, col1)
-        
+
         self.UpdateSelect(row1, col1, row2, col2)
         return "break"
-    
+
     def SelectUp(self, event):
         """ Finds the currently selected portion of text of the local peer
             and the row/col to update it to and calls self.UpdateSelect  """
         row1, col1 = self.text.index(self.text.marker.mark).split(".")
         row1, col1 = int(row1), int(col1)
         row2, col2 = self.Up(row1, col1)
-        
+
         self.UpdateSelect(row1, col1, row2, col2)
         return "break"
-    
+
     def SelectDown(self, event):
         """ Finds the currently selected portion of text of the local peer
             and the row/col to update it to and calls self.UpdateSelect  """
         row1, col1 = self.text.index(self.text.marker.mark).split(".")
         row1, col1 = int(row1), int(col1)
         row2, col2 = self.Down(row1, col1)
-        
+
         self.UpdateSelect(row1, col1, row2, col2)
         return "break"
 
@@ -715,7 +720,7 @@ class Interface(BasicInterface):
         row1, col1 = self.text.index(self.text.marker.mark).split(".")
         row1, col1 = int(row1), int(col1)
         row2, col2 = (int(i) for i in self.text.index("{}.end".format(row1)).split("."))
-        
+
         self.UpdateSelect(row1, col1, row2, col2)
         return "break"
 
@@ -725,7 +730,7 @@ class Interface(BasicInterface):
         row1, col1 = self.text.index(self.text.marker.mark).split(".")
         row1, col1 = int(row1), int(col1)
         row2, col2 = (int(i) for i in self.text.index("{}.0".format(row1)).split("."))
-        
+
         self.UpdateSelect(row1, col1, row2, col2)
         return "break"
 
@@ -739,7 +744,7 @@ class Interface(BasicInterface):
                      MSG_SET_MARK(self.text.marker.id, 1, 0) ]
 
         self.push_queue_put( messages, wait=True )
-                
+
         return "break"
 
     def Selection(self, event=None):
@@ -755,7 +760,7 @@ class Interface(BasicInterface):
     #     # Get contents of the line
 
     #     start, end = "{}.0".format(line), "{}.end".format(line)
-        
+
     #     string = self.text.get(start, end)
 
     #     # Go through the possible tags
@@ -763,14 +768,14 @@ class Interface(BasicInterface):
     #     for tag_name, re_tag in self.lang.re.items():
 
     #         self.text.tag_remove(tag_name, start, end)
-            
+
     #         for match in re_tag.finditer(string):
-                
+
     #             tag_start = "{}.{}".format(line, match.start())
     #             tag_end   = "{}.{}".format(line, match.end())
 
     #             self.text.tag_add(tag_name, tag_start, tag_end)
-                
+
     #     return
 
     """ Ctrl-Home and Ctrl-End Handling """
@@ -780,7 +785,7 @@ class Interface(BasicInterface):
         msg = MSG_SET_MARK(self.text.marker.id, 1, 0)
 
         self.push_queue_put( msg, wait=True)
-                
+
         return "break"
 
     def CtrlEnd(self, event):
@@ -794,7 +799,7 @@ class Interface(BasicInterface):
         self.last_keypress  = "End"
         self.last_row       = row
         self.last_col       = col
-        
+
         return "break"
 
     def findWordLeft(self, row, col):
@@ -836,7 +841,7 @@ class Interface(BasicInterface):
         msg = MSG_SET_MARK(self.text.marker.id, row, col)
 
         self.push_queue_put( msg, wait_for_reply )
-                    
+
         return "break"
 
     def CtrlRight(self, event):
@@ -851,7 +856,7 @@ class Interface(BasicInterface):
         msg = MSG_SET_MARK(self.text.marker.id, row, col)
 
         self.push_queue_put( msg, wait_for_reply )
-                    
+
         return "break"
 
     def findWordRight(self, row, col):
@@ -865,12 +870,12 @@ class Interface(BasicInterface):
         end_row, end_col = self.convert(self.text.index(END))
 
         for r in range(row, end_row + 1):
-            
+
             if r == row:
                 start_col = col
 
             else:
-                
+
                 start_col = 0
 
             _, end_c = self.convert(self.text.index("{}.end".format(row)))
@@ -882,10 +887,10 @@ class Interface(BasicInterface):
                 if self.text.get(index) == " ":
 
                     return r, c
-                    
+
         return end_row, end_col
 
-    """ Directional key-presses """    
+    """ Directional key-presses """
 
     def Left(self, row, col):
         if col > 0:
@@ -893,17 +898,17 @@ class Interface(BasicInterface):
         elif row > 1:
             prev_line = self.text.index("{}.end".format(row-1)).split(".")
             row = int(prev_line[0])
-            col = int(prev_line[1])        
+            col = int(prev_line[1])
         return row, col
-    
+
     def Right(self, row, col):
-        end_col = int(self.text.index("{}.end".format(row)).split(".")[1])          
+        end_col = int(self.text.index("{}.end".format(row)).split(".")[1])
         if col == end_col:
             if "{}.{}".format(row + 1, 0) != self.text.index(END):
                 col = 0
                 row += 1
         else:
-            col += 1        
+            col += 1
         return row, col
 
     def Down(self, row, col):
@@ -930,9 +935,9 @@ class Interface(BasicInterface):
             row += 1
             next_end_col = int(self.text.index("{}.end".format(row)).split(".")[1])
             col = min(col, next_end_col)
-            
+
         return row, col
-    
+
     def Up(self, row, col):
         """ For up and down presses, find the index based on height """
 
@@ -959,7 +964,7 @@ class Interface(BasicInterface):
                 row -= 1
                 prev_end_col = int(self.text.index("{}.end".format(row)).split(".")[1])
                 col = min(col, prev_end_col)
-        
+
         return row, col
 
     def currentBlock(self):
@@ -987,16 +992,16 @@ class Interface(BasicInterface):
             #  Send notification to other peers
 
             msg = MSG_EVALUATE_BLOCK(self.text.marker.id, row, row)
-            
+
             self.push_queue_put( msg )
-        
+
         return "break"
 
     def Evaluate(self, event=None):
         """ Finds the current block of code to evaluate and tells the server """
-        
+
         lines = self.currentBlock()
-        
+
         a, b = ("%d.0" % n for n in lines)
 
         string = self.text.get( a , b ).lstrip()
@@ -1006,9 +1011,9 @@ class Interface(BasicInterface):
             #  Send notification to other peers
 
             msg = MSG_EVALUATE_BLOCK(self.text.marker.id, lines[0], lines[1])
-            
+
             self.push_queue_put( msg )
-                
+
         return "break"
 
     def ChangeFontSize(self, amount):
@@ -1039,12 +1044,12 @@ class Interface(BasicInterface):
 
     def leftMouseRelease(self, event=None):
         """ Updates the server on where the local peer's marker is when the mouse release event is triggered """
-        
+
         self.leftMouse_isDown = False
 
         index = self.text.index("@{},{}".format(event.x, event.y))
         row, col = index.split(".")
-        
+
         self.push_queue_put( MSG_SET_MARK(self.text.marker.id, int(row), int(col)), wait=True )
 
         #self.text.tag_remove(SEL, "1.0", END) # Remove any *actual* selection to stop scrolling
@@ -1060,7 +1065,7 @@ class Interface(BasicInterface):
             start, end = self.text.sort_indices([sel_start, sel_end])
 
             self.push_queue_put( MSG_SELECT(self.text.marker.id, start, end), wait=True )
-            
+
         return "break"
 
     def leftMousePress(self, event):
@@ -1094,7 +1099,7 @@ class Interface(BasicInterface):
 
     def Undo(self, event):
         ''' Triggers an undo event '''
-        self.push_queue_put(MSG_UNDO(self.text.marker.id))
+        #self.push_queue_put(MSG_UNDO(self.text.marker.id))
         return "break"
 
     def Redo(self, event):
@@ -1119,7 +1124,7 @@ class Interface(BasicInterface):
             row, col = self.convert(self.text.index(self.text.marker.mark))
             self.push_queue_put( MSG_BACKSPACE(self.text.marker.id, row, col), wait=True )
         return "break"
-    
+
     def Paste(self, event=None):
         """ Inserts text from the clipboard """
         text = self.root.clipboard_get()
@@ -1170,7 +1175,7 @@ class Interface(BasicInterface):
         return
 
     def ApplyColours(self, event=None):
-        """ Update the IDE for the new colours """ 
+        """ Update the IDE for the new colours """
         LoadColours() # from config.py
         # Text & Line numbers
         self.text.config(bg=COLOURS["Background"], insertbackground=COLOURS["Background"])
@@ -1193,7 +1198,7 @@ class Interface(BasicInterface):
 
     def ImportLog(self):
         """ Imports a logfile generated by run-server.py --log and 'recreates' the performance """
-        logname = tkFileDialog.askopenfilename()        
+        logname = tkFileDialog.askopenfilename()
         self.logfile = Log(logname)
         self.logfile.set_marker(self.text.marker)
         self.logfile.recreate()
@@ -1205,7 +1210,7 @@ class Interface(BasicInterface):
 
         try:
             self.lang=langtypes[name]()
-        
+
         except ExecutableNotFoundError as e:
 
             print(e)
@@ -1236,17 +1241,17 @@ class Interface(BasicInterface):
             os.mkdir(log_folder)
 
         # Create filename based on date and times
-        
+
         self.fn = time.strftime("client-log-%d%m%y_%H%M%S.txt", time.localtime())
         path    = os.path.join(log_folder, self.fn)
-        
+
         self.log_file   = open(path, "w")
         self.is_logging = True
 
     def beginFontMerge(self, event=None):
         """ Opens a basic text-entry window and starts the process of "merging fonts".
             This is the slow process of converging all the font colours to the same
-            colour. 
+            colour.
         """
 
         # TODO get values from a window
@@ -1264,11 +1269,11 @@ class Interface(BasicInterface):
     def ask_duration(self):
         """ Opens a small window that asks the user to enter a duration """
         popup = popup_window(self.root, title="Set duration")
-        
+
         popup.text.focus_set()
 
         # Put the popup on top
-        
+
         self.root.wait_window(popup.top)
 
         return float(popup.value)
