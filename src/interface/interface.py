@@ -617,7 +617,7 @@ class Interface(BasicInterface):
 
                 elif event.keysym == "Tab":
 
-                    char = "    "
+                    char = "  "
                     col += len(char)
 
                 else:
