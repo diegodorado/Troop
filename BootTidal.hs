@@ -22,6 +22,7 @@ import qualified Sound.Tidal.Scales as Scales
 
 -- atajos
 let d = toScale (Scales.lydian)
-let shh = (#gain 0) 
-
-let coolSignal ar as sl = rand * ar + ( (slow sl $ sine1) + (slow (sl*(1/3)) $ tri1) ) * as + 1.0
+let shh = (#gain 0)
+let smoothrand ar sl = rand * ar + ( (slow sl $ sine1) + (slow (sl*(1/3)) $ tri1) )
+let lfotri s vmin vmax = slow s $ scale vmin vmax tri1
+let lfosin s vmin vmax = slow s $ scale vmin vmax sine1
